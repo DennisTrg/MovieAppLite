@@ -1,0 +1,6 @@
+framework module Pods_MovieAppLite {
+  umbrella header "Pods-MovieAppLite-umbrella.h"
+
+  export *
+  module * { export * }
+}
