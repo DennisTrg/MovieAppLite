@@ -18,7 +18,7 @@ class HomeVC: UIViewController {
         super.viewDidLoad()
         self.title = "Home"
         self.view.backgroundColor = .blue
-        // Do any additional setup after loading the view.
+        
         setupView()
     }
     
