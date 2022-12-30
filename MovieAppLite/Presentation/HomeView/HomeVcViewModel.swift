@@ -8,16 +8,20 @@
 import Foundation
 import RxSwift
 import RxRelay
-class HomeVcViewModel{
-    static let shared = HomeVcViewModel()
+
+final class HomeVcViewModel{
+
+    private let apiService: ApiServiceDelegate
     
-    func requestData(page: Int){
-        let url = ApiService.urlString(category: "popular", page: page)
-        let abc = ApiService.fetchDataRxSwift(url: url).map {movieList -> [MovieListResult] in
+    init(apiService: ApiServiceDelegate = ApiService()){
+        self.apiService = apiService
+    }
+    
+    func fetchMovieResult() -> Observable<[MovieListResult]> {
+        apiService.fetchRequest(url: ApiService.urlString(category: "popular", page: 1)).map { movieList -> [MovieListResult] in
             guard let movieListResult = movieList.results else {return []}
             return movieListResult
         }
-        print(abc)
-        
     }
 }
+
