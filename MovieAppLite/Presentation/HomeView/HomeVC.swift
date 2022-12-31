@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 
 class HomeVC: UIViewController {
-    var result: MovieListResult?
+    
     let disposeBag = DisposeBag()
-    let viewModel = HomeViewModel()
+    private let viewModel = HomeViewModel()
     
      var collectionView: UICollectionView = {
          let layout = UICollectionViewFlowLayout()
@@ -28,23 +28,25 @@ class HomeVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Home"
-
+        
         setupView()
         setupData()
+        
     }
     
     //MARK: Set up View
-    func setupView(){
+    private func setupView(){
         self.view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalTo(self.view.safeAreaLayoutGuide)
         }
         collectionView.rx.setDelegate(self)
+        createRefreshControl()
     }
     
     //MARK: Pass Data
-    func setupData(){
-        viewModel.fetchMovieResult().observe(on: MainScheduler.instance)
+    private func setupData(){
+        viewModel.fetchMovieResult(page: 1).observe(on: MainScheduler.instance)
             .bind(to: collectionView.rx.items(cellIdentifier: HomeCollectionViewCell.identifier, cellType: HomeCollectionViewCell.self)
         ) {(row, element, cell) in
                 cell.config(model: element)
@@ -59,7 +61,38 @@ extension HomeVC: UICollectionViewDelegateFlowLayout, UICollectionViewDelegate{
         return CGSize(width: view.frame.size.width * 0.41, height: view.frame.size.height * 0.34)
     }
 }
+extension HomeVC{
+    private func createRefreshControl(){
+        let customRefreshControl = UIRefreshControl()
+        customRefreshControl.tintColor = .gray
+        self.collectionView.refreshControl = customRefreshControl
+        self.collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        
+    }
+    
+    @objc
+    private func refreshData(){
+        
+        if self.collectionView.refreshControl?.isRefreshing == true{
+            print("Refreshing")
+            self.navigationController?.setNavigationBarHidden(true, animated: true)
+        }
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {[weak self] in
+            self?.collectionView.dataSource = nil
+            self?.setupData()
+            self?.collectionView.refreshControl?.endRefreshing()
+        }
+        
+        self.collectionView.refreshControl?.endRefreshing()
+        
+        if self.collectionView.refreshControl?.isRefreshing == false{
+            print("END Refreshing")
+            self.navigationController?.setNavigationBarHidden(false, animated: true)
+        }
+        
+    }
+}
 
 //        collectionView.rx.modelSelected(MovieListResult.self).subscribe { movie in
 //

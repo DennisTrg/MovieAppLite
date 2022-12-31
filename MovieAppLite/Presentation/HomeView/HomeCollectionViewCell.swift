@@ -30,7 +30,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: Set up View
-    func addView(){
+    private func addView(){
         let view = UIView()
         addSubview(view)
         view.snp.makeConstraints { make in
@@ -59,7 +59,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     func config(model: MovieListResult){
         movieName.text = model.originalTitle
 
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInitiated).async {
             guard let imagePath = model.posterPath else {return}
             guard let imageUrl = URL(string: ApiService.ImageUrlString(imagePath: imagePath)) else {return}
             do{
@@ -73,3 +73,5 @@ class HomeCollectionViewCell: UICollectionViewCell {
         }
     }
 }
+
+

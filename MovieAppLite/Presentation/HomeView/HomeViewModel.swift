@@ -17,8 +17,8 @@ final class HomeViewModel{
         self.apiService = apiService
     }
     
-    func fetchMovieResult() -> Observable<[MovieListResult]> {
-        apiService.fetchRequest(url: ApiService.urlString(category: "popular", page: 1)).map { movieList -> [MovieListResult] in
+    func fetchMovieResult(page: Int) -> Observable<[MovieListResult]> {
+        apiService.fetchRequest(url: ApiService.urlString(category: "popular", page: page)).map { movieList -> [MovieListResult] in
             guard let movieListResult = movieList.results else {return []}
             return movieListResult
         }
