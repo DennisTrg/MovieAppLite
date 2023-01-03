@@ -31,7 +31,8 @@ class HomeVC: UIViewController {
         
         setupView()
         setupData()
-        viewModel.fetchMovieResult(page: 1)
+        viewModel.fetchMovieResult(url: ApiService.urlString(category: "popular", page: 1))
+        //viewModel.fetchMovieResult(url: ApiService.configureUrlString(keyword: "aa", page: 1))
     }
     
     //MARK: Set up View
@@ -79,7 +80,7 @@ extension HomeVC{
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {[weak self] in
 
-            self?.viewModel.fetchMovieResult(page: 1)
+            self?.viewModel.fetchMovieResult(url: ApiService.urlString(category: "popular", page: 1))
             self?.collectionView.refreshControl?.endRefreshing()
         }
         

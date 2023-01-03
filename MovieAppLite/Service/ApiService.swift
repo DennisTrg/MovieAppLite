@@ -20,6 +20,10 @@ class ApiService{
     static func urlString(category: String, page: Int) -> String{
         return "https://api.themoviedb.org/3/movie/\(category)?api_key=\(APIKey)&page=\(page)"
     }
+    
+    static func configureUrlString(keyword: String, page: Int) -> String {
+        return "https://api.themoviedb.org/3/search/movie?query=\(keyword)&api_key=\(APIKey)&page=\(page)"
+    }
 }
 
 extension ApiService: ApiServiceDelegate{
@@ -48,6 +52,7 @@ extension ApiService: ApiServiceDelegate{
             
             return Disposables.create {
                 task.cancel()
+                print("DISPOSE")
             }
         }
     }

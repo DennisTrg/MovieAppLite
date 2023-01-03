@@ -17,13 +17,14 @@ final class HomeViewModel{
         self.apiService = apiService
     }
     
-    func fetchMovieResult(page: Int){
-        apiService.fetchRequest(url: ApiService.urlString(category: "popular", page: page)).map { movieList -> [MovieListResult] in
+    func fetchMovieResult(url: String){
+        apiService.fetchRequest(url: url).map { movieList -> [MovieListResult] in
             guard let movieListResult = movieList.results else {return []}
             return movieListResult
         }.map { movieResult in
-             movieResult.map {HomeListMovie.convertMovieToFormat(movieInfo: $0)}
-        }.bind(to: listMovieHome)
+            movieResult.map {HomeListMovie.convertMovieToFormat(movieInfo: $0)}
+       }.take(1)
+           .bind(to: listMovieHome)
     }
 }
 
