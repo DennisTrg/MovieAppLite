@@ -24,6 +24,7 @@ class MainTabBarVC: UITabBarController, UITabBarControllerDelegate {
     private func setupVC(){
         viewControllers = [
         navigator(rootVC: HomeVC(), title: "Home", image: "film.fill"),
+        navigator(rootVC: SearchVC(), title: "Search", image: "magnifyingglass"),
         navigator(rootVC: CategoryVC(), title: "Category", image: "list.number")]
     }
     
