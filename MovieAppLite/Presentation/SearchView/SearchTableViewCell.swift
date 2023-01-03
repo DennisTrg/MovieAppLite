@@ -12,7 +12,7 @@ import SnapKit
 class SearchTableViewCell: UITableViewCell {
     
     static let identifier = "SearchTableViewCell"
-    
+    var test1: String = "Testest"
     let movieImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
