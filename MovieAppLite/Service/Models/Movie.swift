@@ -51,3 +51,14 @@ struct MovieListResult: Codable{
         case voteCount = "vote_count"
     }
 }
+
+struct HomeListMovie: Codable{
+    let originalTitle: String?
+    let posterPath: String?
+}
+
+extension HomeListMovie{
+    static func convertMovieToFormat(movieInfo: MovieListResult) -> HomeListMovie{
+        return HomeListMovie(originalTitle: movieInfo.originalTitle, posterPath: movieInfo.posterPath)
+    }
+}
