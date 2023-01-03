@@ -10,7 +10,7 @@ import SnapKit
 
 class HomeCollectionViewCell: UICollectionViewCell {
     
-    static var identifier = "HomeCollectionViewCell"
+    static let identifier = "HomeCollectionViewCell"
     let movieImage = UIImageView()
     let movieName = UILabel()
     private let cache = NSCache<NSNumber, UIImage>()

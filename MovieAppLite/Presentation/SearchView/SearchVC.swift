@@ -10,12 +10,17 @@ import UIKit
 class SearchVC: UIViewController {
     
     let searchBar =  UISearchBar()
-    let tableView = UITableView()
+    let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(SearchTableViewCell.self, forCellReuseIdentifier: SearchTableViewCell.identifier)
+        //tableView.rowHeight = UITableView.automaticDimension
+        return tableView
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Search"
         setupView()
-        
+ 
     }
     
     func setupView(){
@@ -33,6 +38,8 @@ class SearchVC: UIViewController {
         }
         tableView.backgroundColor = .red
         detectTapGesture()
+        tableView.delegate = self
+        tableView.dataSource = self
     }
     
 }
@@ -49,5 +56,19 @@ extension SearchVC{
     @objc
     func dismissKeyboard(){
         self.view.endEditing(true)
+    }
+}
+
+extension SearchVC: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.identifier, for: indexPath) as? SearchTableViewCell else {return UITableViewCell()}
+        return cell
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }
