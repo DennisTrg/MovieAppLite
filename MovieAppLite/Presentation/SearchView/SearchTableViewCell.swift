@@ -12,7 +12,6 @@ import SnapKit
 class SearchTableViewCell: UITableViewCell {
     
     static let identifier = "SearchTableViewCell"
-    var test1: String = "Testest"
     let movieImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -100,7 +99,11 @@ class SearchTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+        self.movieImageView.image = nil
+        self.movieName.text = nil
+        self.movieGenre.text = nil
+        self.movieRate.rating = 0
+        self.releaseDate.text = nil
     }
 
 }
