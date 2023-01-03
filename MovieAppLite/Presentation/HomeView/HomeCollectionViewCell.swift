@@ -13,6 +13,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     static var identifier = "HomeCollectionViewCell"
     let movieImage = UIImageView()
     let movieName = UILabel()
+    private let cache = NSCache<NSNumber, UIImage>()
     
     override init(frame: CGRect) {
          super.init(frame: frame)
@@ -56,19 +57,29 @@ class HomeCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: Set up Data
-    func config(model: MovieListResult){
+    func config(model: HomeListMovie, index: Int){
         movieName.text = model.originalTitle
+        
+        let itemNum = NSNumber(value: index)
 
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard let imagePath = model.posterPath else {return}
-            guard let imageUrl = URL(string: ApiService.ImageUrlString(imagePath: imagePath)) else {return}
-            do{
-                let image = try Data(contentsOf: imageUrl)
-                DispatchQueue.main.async { [weak self]  in
-                    self?.movieImage.image = UIImage(data: image)
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            if let cacheImage = self?.cache.object(forKey: itemNum) {
+                DispatchQueue.main.async {
+                self?.movieImage.image = cacheImage
                 }
-            }catch{
-                self.movieImage.image = UIImage(systemName: "arrow.triangle.2.circlepath")
+            } else {
+                guard let imagePath = model.posterPath else {return}
+                guard let imageUrl = URL(string: ApiService.ImageUrlString(imagePath: imagePath)) else {return}
+                do{
+                    let imageData = try Data(contentsOf: imageUrl)
+                    guard let image = UIImage(data: imageData) else {return}
+                    DispatchQueue.main.async {
+                        self?.movieImage.image = image
+                        self?.cache.setObject(image, forKey: itemNum)
+                    }
+                }catch{
+                    self?.movieImage.image = UIImage(systemName: "arrow.triangle.2.circlepath")
+                }
             }
         }
     }
