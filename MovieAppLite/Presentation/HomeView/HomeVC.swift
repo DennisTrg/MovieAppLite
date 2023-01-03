@@ -31,7 +31,7 @@ class HomeVC: UIViewController {
         
         setupView()
         setupData()
-        
+        viewModel.fetchMovieResult(page: 1)
     }
     
     //MARK: Set up View
@@ -46,12 +46,11 @@ class HomeVC: UIViewController {
     
     //MARK: Pass Data
     private func setupData(){
-        viewModel.fetchMovieResult(page: 1).observe(on: MainScheduler.instance)
-            .bind(to: collectionView.rx.items(cellIdentifier: HomeCollectionViewCell.identifier, cellType: HomeCollectionViewCell.self)
-        ) {(row, element, cell) in
-                cell.config(model: element)
-        }
-        .disposed(by: disposeBag)
+        viewModel.listMovieHome.observe(on: MainScheduler.instance)
+            .bind(to: collectionView.rx.items(cellIdentifier: HomeCollectionViewCell.identifier, cellType: HomeCollectionViewCell.self)){
+                (row, element, cell) in
+                cell.config(model: element, index: row)
+            }.disposed(by: disposeBag)
     }
         
 }
@@ -79,8 +78,8 @@ extension HomeVC{
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {[weak self] in
-            self?.collectionView.dataSource = nil
-            self?.setupData()
+
+            self?.viewModel.fetchMovieResult(page: 1)
             self?.collectionView.refreshControl?.endRefreshing()
         }
         
