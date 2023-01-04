@@ -17,15 +17,13 @@ class MainTabBarVC: UITabBarController, UITabBarControllerDelegate {
         UITabBar.appearance().backgroundColor = .clear
         UITabBar.appearance().barTintColor = .systemBackground
         tabBar.tintColor = .label
-        
         setupVC()
     }
     
     private func setupVC(){
         viewControllers = [
         navigator(rootVC: HomeVC(), title: "Home", image: "film.fill"),
-        navigator(rootVC: SearchVC(), title: "Search", image: "magnifyingglass"),
-        navigator(rootVC: CategoryVC(), title: "Category", image: "list.number")]
+        navigator(rootVC: SearchVC(), title: "Search", image: "magnifyingglass")]
     }
     
     fileprivate func navigator(rootVC : UIViewController, title: String, image: String) -> UIViewController{

@@ -51,15 +51,13 @@ class HomeCollectionViewCell: UICollectionViewCell {
             make.right.left.top.equalToSuperview()
             make.bottom.equalTo(movieName.snp.top)
         }
-        movieImage.backgroundColor = .gray
         movieImage.clipsToBounds = true
-        self.movieImage.image = UIImage(systemName: "arrow.triangle.2.circlepath")
+        self.movieImage.image = UIImage(named: "img_placeholder")
     }
     
     //MARK: Set up Data
     func config(model: HomeListMovie, index: Int){
         movieName.text = model.originalTitle
-        
         let itemNum = NSNumber(value: index)
 
         DispatchQueue.global(qos: .utility).async { [weak self] in
@@ -78,7 +76,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
                         self?.cache.setObject(image, forKey: itemNum)
                     }
                 }catch{
-                    self?.movieImage.image = UIImage(systemName: "arrow.triangle.2.circlepath")
+                    self?.movieImage.image = UIImage(named: "img_placeholder")
                 }
             }
         }

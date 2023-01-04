@@ -12,7 +12,6 @@ import SnapKit
 class SearchTableViewCell: UITableViewCell {
     
     static let identifier = "SearchTableViewCell"
-    
     let movieImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -26,23 +25,23 @@ class SearchTableViewCell: UITableViewCell {
         name.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         name.numberOfLines = 0
         name.minimumScaleFactor = 1
-        name.text = "Avatar: Water Sea Ocean Avatar: Water Sea OceanAvatar: Water Sea OceanAvatar: Water Sea OceanAvatar: Water Sea OceanAvatar: Water Sea OceanAvatar: Water Sea Ocean"
+
         return name
     }()
     
     let movieGenre: UILabel = {
         let genre = UILabel()
         genre.textAlignment = .left
-        genre.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        genre.text = "Comedy"
+        genre.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        
         return genre
     }()
     
     let releaseDate: UILabel = {
         let date = UILabel()
         date.textAlignment = .left
-        date.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        date.text = "2020"
+        date.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        
         return date
     }()
     
@@ -91,7 +90,6 @@ class SearchTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(movieGenre)
         stackView.addArrangedSubview(releaseDate)
         stackView.addArrangedSubview(movieRate)
-        
     }
 
      required init?(coder aDecoder: NSCoder) {
@@ -100,7 +98,32 @@ class SearchTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+        self.movieImageView.image = nil
+        self.movieName.text = nil
+        self.movieGenre.text = nil
+        self.movieRate.rating = 0
+        self.releaseDate.text = nil
     }
+    
+    func config(model: HomeListMovie, index: Int){
+        movieName.text = model.originalTitle
+        movieGenre.text = model.genre
+        releaseDate.text = model.releaseDate
+        movieRate.rating = model.ratingScore / 2
+        let itemNum = NSNumber(value: index)
 
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let imagePath = model.posterPath else {return}
+            guard let imageUrl = URL(string: ApiService.ImageUrlString(imagePath: imagePath)) else {return}
+            do{
+                let imageData = try Data(contentsOf: imageUrl)
+                guard let image = UIImage(data: imageData) else {return}
+                DispatchQueue.main.async {
+                    self?.movieImageView.image = image
+                }
+            }catch{
+                self?.movieImageView.image = UIImage(named: "img_placeholder")
+            }
+        }
+    }
 }
