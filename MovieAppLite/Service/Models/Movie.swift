@@ -55,10 +55,9 @@ struct MovieListResult: Codable{
 struct HomeListMovie: Codable{
     let originalTitle: String?
     let posterPath: String?
-    
     let genre: String?
     let releaseDate: String?
-    let ratingScore: Double?
+    let ratingScore: Double
 }
 
 extension HomeListMovie{
@@ -70,12 +69,12 @@ extension HomeListMovie{
                 genreID.map { id in
                     _ = genreCode.map({ (key,value) in
                         if key == id { genre.append(value)}
-                    })
-                }
+                    })}
+                
                 return genre.joined(separator: ", ")
             }
                 return ""
-        }(), releaseDate: movieInfo.releaseDate, ratingScore: movieInfo.voteAverage)
+        }(), releaseDate: movieInfo.releaseDate, ratingScore: movieInfo.voteAverage ?? 0)
     }
 }
 

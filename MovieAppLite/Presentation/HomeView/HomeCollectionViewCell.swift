@@ -58,7 +58,6 @@ class HomeCollectionViewCell: UICollectionViewCell {
     //MARK: Set up Data
     func config(model: HomeListMovie, index: Int){
         movieName.text = model.originalTitle
-        
         let itemNum = NSNumber(value: index)
 
         DispatchQueue.global(qos: .utility).async { [weak self] in
