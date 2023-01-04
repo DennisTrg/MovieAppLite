@@ -6,65 +6,80 @@
 //
 
 import UIKit
+import RxSwift
 
-class SearchVC: UIViewController {
+class SearchVC: UIViewController, UITableViewDelegate, UIGestureRecognizerDelegate {
     
+    let tapGesture: UITapGestureRecognizer = {
+        let tap = UITapGestureRecognizer()
+        tap.cancelsTouchesInView = false
+        tap.numberOfTapsRequired = 1
+        return tap
+    }()
+    let viewModel = MovieSearchViewModel()
+    let disposeBag = DisposeBag()
     let searchBar =  UISearchBar()
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(SearchTableViewCell.self, forCellReuseIdentifier: SearchTableViewCell.identifier)
-        tableView.rowHeight = UITableView.automaticDimension
         return tableView
     }()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Search"
         setupView()
- 
+        setupData()
     }
     
-    func setupView(){
+    private func setupView(){
+        
         self.view.addSubview(searchBar)
         searchBar.snp.makeConstraints { make in
             make.top.left.right.equalTo(self.view.safeAreaLayoutGuide)
             make.height.equalTo(40)
         }
         searchBar.placeholder = "Search"
-        //searchBar.inputViewController?.dismissKeyboard()
+        
         self.view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
             make.right.left.bottom.equalToSuperview()
         }
-        tableView.backgroundColor = .red
-        detectTapGesture()
-        tableView.delegate = self
-        tableView.dataSource = self
+        
+        view.addGestureRecognizer(tapGesture)
+        tapGesture.rx.event.subscribe(onNext:{[weak self] (recognizer) in
+            self?.view.endEditing(true)
+        }).disposed(by: disposeBag)
     }
     
+    private func setupData(){
+        
+        tableView.rx.setDelegate(self)
+        searchBar.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.fetchMovieResult(keyword: $0, page: 1)
+            }).disposed(by: disposeBag)
+        
+        searchBar.rx.searchButtonClicked.asDriver().drive(onNext:{[weak self] in
+            self?.view.endEditing(true)
+        }).disposed(by: disposeBag)
+        
+        viewModel.movieDetail
+            .observe(on: MainScheduler.instance)
+            .bind(to: tableView.rx.items(cellIdentifier: SearchTableViewCell.identifier, cellType: SearchTableViewCell.self)){
+                (row, element, cell) in
+                cell.config(model: element, index: row)
+                
+            }.disposed(by: disposeBag)
+    }
 }
 
-extension SearchVC{
-    //MARK: dismissKeyBoard
-    func detectTapGesture(){
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tap.cancelsTouchesInView = false
-        tap.numberOfTapsRequired = 1
-        view.addGestureRecognizer(tap)
-    }
-    
-    @objc
-    func dismissKeyboard(){
-        self.view.endEditing(true)
+extension SearchVC {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return CGFloat(self.view.safeAreaLayoutGuide.layoutFrame.height / 4)
     }
 }
 
-extension SearchVC: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.identifier, for: indexPath) as? SearchTableViewCell else {return UITableViewCell()}
-        return cell
-    }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-    }
-}
