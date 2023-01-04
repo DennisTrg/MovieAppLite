@@ -21,7 +21,7 @@ class HomeVC: UIViewController {
         return refreshControl
     }()
     
-     lazy var collectionView: UICollectionView = {
+     let collectionView: UICollectionView = {
          let layout = UICollectionViewFlowLayout()
          layout.sectionInset = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
          
